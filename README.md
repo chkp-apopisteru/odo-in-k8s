@@ -13,6 +13,11 @@ docker run -d \
 -e Secret=<CONNECTOR-SECRET> \
 adanite/odo_connector:eu_v3
 ```  
+Three interesting requirements had to be solved:
+* using sysctl
+* mapping device
+* using linux capabilities
+
 ```<CONNECTOR_SECRET>``` provided via ConfigMap, not Secret, since there is no decryption function inside the container and secrets are only base64 encoded.
 
 For offline install, with docker runtime, one may pull the image on a different machine, save it, transfer the archive to K8S master node and docker load it.
