@@ -1,7 +1,10 @@
 # odo-in-k8s
 Manifest to run Harmony Connect Remote Access (former ODO) in K8S
 
-Converted original instructions to run adanite/odo_connecter:GEO_v3 in Kubernetes as a Pod - Deployment will follow.
+Converted original instructions to run adanite/odo_connecter:GEO_v3 in Kubernetes
+
+* as a Pod
+* as a Deployment
 
 Original command:
 ```
@@ -13,14 +16,17 @@ docker run -d \
 -e Secret=<CONNECTOR-SECRET> \
 adanite/odo_connector:eu_v3
 ```  
+
 Several interesting requirements had to be solved:
+
 * using sysctl
 * mapping device
 * using linux capabilities
-* DNS (quick hack change core-dns config to forward to external servers)
+* DNS (quick hack change ```core-dns``` config to forward to external servers)
 * logging, solved with run-time option ```--log-file-max-size=1024```
 
-```<CONNECTOR_SECRET>``` provided via ConfigMap, not Secret, since there is no decryption function inside the container and secrets are only base64 encoded.
+```<CONNECTOR_SECRET>``` provided via ConfigMap in Pod, not Secret, since there is no decryption function inside the container and secrets are only base64 encoded.
+In Deployment, <CONNECTOR_SECRET> is provided as a Secret.
 
 For offline install, with docker runtime, one may pull the image on a different machine, save it, transfer the archive to K8S master node and docker load it.
 
