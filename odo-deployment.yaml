@@ -1,0 +1,51 @@
+apiVersion: v1
+data:
+  Secret: ZXlKaGJHY2lPaUpGVXpNNE5DSXNJbXRwWkNJNklpSjkuWEFBQUFBVmpiMjV1WldOMGIzSmZhV1FBRUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUJYTnBkR1ZmYVdRQUVBQUFBQUFNWE9YbEtPRkdwcm5lTk5GYmFnLTFFR2x1ZEdWeWJtRnNYM05wZEdWZmFXUUFPQThBQUFBLk5KOFhuRW1EYUZvbGp0Z3JqWGo5WmUtQUN5VGdUM3hOOFhMenRreHRlVFhkSDJiVmM1SDNoLW8xYlNQOTlsSEJuZ1JRN1ZHcjNsV2d4a3dWRUh3NllyS2NmeURsQ01Jdy1kSmtZa3lQRUpvaFA5V19BTjZ5UVh0NGpnam9iUFpk
+kind: Secret
+metadata:
+  name: odo-secret
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: odo-deployment
+  name: odo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: odo-deployment
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: odo-deployment
+    spec:
+      securityContext:
+        sysctls:
+        - name: net.ipv4.ip_forward
+          value: "1"
+      volumes:
+      - name: dev-net-tun
+        hostPath:
+          path: /dev/net/tun
+      containers:
+      - image: adanite/odo_connector:eu_v3
+        name: odoconnector
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["NET_ADMIN"]
+        volumeMounts:
+        - mountPath: /dev/net/tun
+          name: dev-net-tun
+        env:
+          # Define the environment variable
+          - name: Secret
+            valueFrom:
+              secretKeyRef:
+                name: odo-secret
+                key: Secret   
