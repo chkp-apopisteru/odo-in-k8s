@@ -13,16 +13,18 @@ docker run -d \
 -e Secret=<CONNECTOR-SECRET> \
 adanite/odo_connector:eu_v3
 ```  
-Three interesting requirements had to be solved:
+Several interesting requirements had to be solved:
 * using sysctl
 * mapping device
 * using linux capabilities
+* DNS (quick hack change core-dns config to forward to external servers)
+* logging, solved with run-time option ```--log-file-max-size=1024```
 
 ```<CONNECTOR_SECRET>``` provided via ConfigMap, not Secret, since there is no decryption function inside the container and secrets are only base64 encoded.
 
 For offline install, with docker runtime, one may pull the image on a different machine, save it, transfer the archive to K8S master node and docker load it.
 
-Since the manifest includes both ConfigMap and Pod, if Secret must be changed simply run kubectl replace --force --grace-period=0 -f to have both reinitialized (yes, I know that updating CM will update the env var of container, but it was easier and more consistent during testing).
+Since the manifest includes both ConfigMap and Pod, if Secret must be changed simply run ```kubectl replace --force --grace-period=0 -f``` to have both reinitialized (yes, I know that updating CM will update the env var of container, but it was easier and more consistent during testing).
   
 Tested with minikube, which requires --extra-config
 ```
